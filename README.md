@@ -1,2 +1,2 @@
 # CSECGEFoam
-Continuum scale electrochemical gas eolution solver on OpenFOAM
+Continuum scale electrochemical gas evolution solver on OpenFOAM
