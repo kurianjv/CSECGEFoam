@@ -14,7 +14,7 @@ Step 2: Now go the the CSECGEFoam folder ```$ cd ../../CSECGEFoam/``` and run ``
 This should have installed CSECGEFoam solver in ```FOAM_USER_APPBIN ```.
 
 # Verification 
-The verification of the solver is discussed in 
+The verification of the solver is discussed in [1,2,3].
 
 # Usage
 The CSECGEFoam solver is released under Creative Commons Attribution-NonCommercial 4.0 International Public License (see LICENSE.txt included included in the main directory). Please feel free to extend, modify and use the solver according to your requirement (only for noncommerical usage). For reference of the solver, please cite to the following papers [1,2,3].
