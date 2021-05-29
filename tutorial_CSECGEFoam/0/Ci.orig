@@ -1,0 +1,69 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  6                                     |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      Ci;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 -3 0 0 1 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    top_wall
+    {
+        type            fixedValue;
+	value		uniform 0.0;
+    }
+    left_wall
+    {
+       type		zeroGradient;
+    }
+
+    bottom_wall
+    {
+    type            codedMixed;
+
+    refValue        uniform 0; 
+    refGradient     uniform 0;
+    valueFraction   uniform 0;//1 indicated fixedValue,  0 is fixedGradient condition
+
+    redirectType    ECG_reaction;   // name of generated BC
+
+    code
+    #{
+
+       const scalarField& alpha1_electrode = this->patch().lookupPatchField<volScalarField, scalar>("alpha.water");
+       const vectorField& currentdensity = this->patch().lookupPatchField<volVectorField, scalar>("currentdensity");
+       
+       scalar n = 2.0;//no of electrons transfer
+       scalar F = 96485.0;// Faradays constant
+       scalar Dl = 4.80e-9; //db().lookupObject<IOdictionary>("transportProperties").subDict("water").lookup("D");
+       scalar cellthickness = 1.0;
+
+       this->refGrad() = mag(currentdensity)*alpha1_electrode*cellthickness/(n*F*Dl);
+    #};
+    }
+    right_wall
+    {
+        type            zeroGradient;
+    }
+    defaultFaces
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //

@@ -1,0 +1,126 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+solvers
+{
+    "alpha.water.*"
+    {
+        nAlphaCorr      2;
+        nAlphaSubCycles 1;
+        cAlpha          1;
+
+        maxUnboundedness 1e-3;
+
+        MULESCorr       yes;
+        nLimiterIter    3;
+
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+    p_rgh
+    {
+        solver          PCG;
+	preconditioner   
+        {
+            preconditioner  GAMG;
+            tolerance       1e-08;
+            relTol          0.05;
+            nVcycles        2;
+            smoother        DICGaussSeidel;
+            nPreSweeps      2;
+            nPostSweeps     0;
+            nFinestSweeps   2;
+            cacheAgglomeration true;
+            nCellsInCoarsestLevel 10;
+            agglomerator    faceAreaPair;
+            mergeLevels     1;
+        }        
+	//preconditioner  DIC;
+        tolerance       1e-10;
+        relTol          0.02;
+    }
+  "pcorr.*"
+    {
+        $p_rgh;
+        relTol          0;
+    }
+    p_rghFinal
+    {
+        $p_rgh;
+        relTol          0;
+        maxIter         1000000;
+    }
+
+    U
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-10;
+        relTol          0;
+        minIter         1;
+    }
+    EP
+    {
+        solver          GAMG;
+        smoother        DICGaussSeidel;
+        tolerance       1e-10;
+        relTol          0;
+        maxIter         1000000;
+    }
+    Ci
+    {
+        solver           PBiCGStab;
+        preconditioner   diagonal;
+        tolerance       1e-10;
+        relTol          0;
+        minIter         1;
+        maxIter         1000000;
+    }
+    psiFinal
+    {
+        solver          GAMG;
+        smoother        DICGaussSeidel;
+        tolerance       1e-10;
+        relTol          0;
+        minIter         1;
+        maxIter         1000000;
+    }
+}
+
+PIMPLE
+{
+    momentumPredictor   no;
+    nOuterCorrectors    1;
+    nCorrectors         3;
+    nNonOrthogonalCorrectors 0;
+ /*   pRefValue           0;
+    pRefCell            1001;*/
+    Cpc                 0.3;
+}
+
+
+relaxationFactors
+{
+    equations
+    {
+        ".*"                1.0;
+    }
+}
+
+// ************************************************************************* //
